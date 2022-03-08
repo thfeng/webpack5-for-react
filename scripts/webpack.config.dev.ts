@@ -10,10 +10,10 @@ const config: Configuration | WebpackOptionsNormalized = {
   plugins: BaseConfig.plugins?.concat([
     new HotModuleReplacementPlugin(),
     new BundleAnalyzerPlugin({
-      open: false,
+      openAnalyzer: false,
     }),
   ]),
-  devtool: 'eval-cheap-source-map',
+  devtool: 'eval-cheap-module-source-map',
   devServer: {
     static: {
       directory: path.join(__dirname, 'dist'),
