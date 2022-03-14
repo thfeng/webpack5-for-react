@@ -1,9 +1,14 @@
 import path from 'path';
-import { Configuration, HotModuleReplacementPlugin, WebpackOptionsNormalized } from 'webpack';
+import {
+  Configuration,
+  HotModuleReplacementPlugin,
+  WebpackOptionsNormalized,
+} from 'webpack';
 import { merge } from 'webpack-merge';
 import BaseConfig from './webpack.config.base';
 
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin =
+  require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const config: Configuration | WebpackOptionsNormalized = {
   mode: 'development',
