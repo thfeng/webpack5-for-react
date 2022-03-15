@@ -4,11 +4,21 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import ESLintPlugin from 'eslint-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import WebpackBar from 'webpackbar';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
-export const cssModule: RuleSetRule = {
+const devMode = process.env.NODE_ENV !== 'production';
+
+const cssModule: RuleSetRule = {
   test: /\.css$/i,
   use: [
-    'style-loader',
+    devMode
+      ? 'style-loader'
+      : {
+          loader: MiniCssExtractPlugin.loader,
+          options: {
+            publicPath: './',
+          },
+        },
     {
       loader: 'css-loader',
       options: {
@@ -21,27 +31,42 @@ export const cssModule: RuleSetRule = {
   ],
 };
 
-export const sassModule: RuleSetRule = {
+const sassModule: RuleSetRule = {
   test: /\.s(a|c)ss$/,
   use: [
-    'style-loader',
+    devMode
+      ? 'style-loader'
+      : {
+          loader: MiniCssExtractPlugin.loader,
+          options: {
+            publicPath: './',
+          },
+        },
     {
       loader: 'css-loader',
       options: {
-        modules: {
-          localIdentName: '[local]_[hash:base64:5]',
-        },
+        importLoaders: 2,
+        modules: true,
       },
     },
     'postcss-loader',
-    'sass-loader',
+    {
+      loader: 'sass-loader',
+    },
   ],
 };
 
-export const lessModule: RuleSetRule = {
+const lessModule: RuleSetRule = {
   test: /\.less$/i,
   use: [
-    'style-loader',
+    devMode
+      ? 'style-loader'
+      : {
+          loader: MiniCssExtractPlugin.loader,
+          options: {
+            publicPath: './',
+          },
+        },
     {
       loader: 'css-loader',
       options: {
@@ -62,6 +87,54 @@ export const lessModule: RuleSetRule = {
   ],
 };
 
+const scriptModule = {
+  test: /\.(t|j)sx?$/i,
+  exclude: /node_modules/,
+  loader: 'babel-loader',
+};
+
+const fontModule = {
+  test: /\.(eot|woff|woff2|otf|tff|svg)/i,
+  type: 'asset/resource',
+};
+
+const imageModule = {
+  test: /\.(png|jpg|jpeg|gif)(\?|$)/i,
+  type: 'asset',
+  parser: {
+    dataUrlCondition: {
+      maxSize: 30 * 1024,
+    },
+  },
+  generator: {
+    filename: 'img/[name].[hash:6][ext]',
+    publicPath: './',
+  },
+};
+
+const jsonModule = {
+  test: /\.json/i,
+  include: path.resolve('../', 'locales'),
+  type: 'javascript/auto',
+  generator: {
+    filename: 'locales/[name][ext]',
+  },
+};
+
+const plugins = [
+  new WebpackBar(),
+  new HtmlWebpackPlugin({
+    template: path.resolve(__dirname, '../src/index.html'),
+  }),
+
+  new ESLintPlugin({
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
+  }),
+  new ForkTsCheckerWebpackPlugin({
+    async: false,
+  }),
+];
+
 const config: Configuration = {
   entry: path.resolve(__dirname, '../src/index.ts'),
   output: {
@@ -75,36 +148,10 @@ const config: Configuration = {
       cssModule,
       lessModule,
       sassModule,
-      {
-        test: /\.(t|j)sx?$/i,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-      },
-      {
-        test: /\.(eot|woff|woff2|otf|tff|svg)/i,
-        type: 'asset/resource',
-      },
-      {
-        test: /\.(png|jpg|jpeg|gif)(\?|$)/i,
-        type: 'asset',
-        parser: {
-          dataUrlCondition: {
-            maxSize: 30 * 1024,
-          },
-        },
-        generator: {
-          filename: 'img/[name].[hash:6][ext]',
-          publicPath: './',
-        },
-      },
-      {
-        test: /\.json/i,
-        include: path.resolve('../', 'locales'),
-        type: 'javascript/auto',
-        generator: {
-          filename: 'locales/[name][ext]',
-        },
-      },
+      scriptModule,
+      fontModule,
+      imageModule,
+      jsonModule,
     ],
   },
   resolve: {
@@ -114,18 +161,14 @@ const config: Configuration = {
       '@': path.resolve(__dirname, '../src'),
     },
   },
-  plugins: [
-    new WebpackBar(),
-    new HtmlWebpackPlugin({
-      template: path.resolve(__dirname, '../src/index.html'),
-    }),
-    new ESLintPlugin({
-      extensions: ['.ts', '.tsx', '.js', '.jsx'],
-    }),
-    new ForkTsCheckerWebpackPlugin({
-      async: false,
-    }),
-  ],
+  plugins: devMode
+    ? plugins
+    : [
+        ...plugins,
+        new MiniCssExtractPlugin({
+          filename: '[name]-[contenthash].css',
+        }),
+      ],
 };
 
 export default config;
