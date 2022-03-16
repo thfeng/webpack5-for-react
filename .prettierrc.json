@@ -7,7 +7,7 @@
     "overrides": [{
             "files": ".prettierrc",
             "options": {
-                "parser": "json"
+                "parser": "flow"
             }
         },
         {
