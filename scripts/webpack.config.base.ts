@@ -5,6 +5,14 @@ import ESLintPlugin from 'eslint-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import WebpackBar from 'webpackbar';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import AppConfig from '../config/config';
+
+const HtmlTemplateConfig = {
+  title: AppConfig.title,
+  headScripts: AppConfig.headScripts,
+  bodyScripts: AppConfig.bodyScripts,
+  rootElementId: AppConfig.rootElementId,
+};
 
 const devMode = process.env.NODE_ENV !== 'production';
 
@@ -124,7 +132,8 @@ const jsonModule = {
 const plugins = [
   new WebpackBar(),
   new HtmlWebpackPlugin({
-    template: path.resolve(__dirname, '../src/index.html'),
+    config: HtmlTemplateConfig,
+    template: path.resolve(__dirname, './template/index.ejs'),
   }),
 
   new ESLintPlugin({
