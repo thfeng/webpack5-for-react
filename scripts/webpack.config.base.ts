@@ -8,6 +8,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import AppConfig from '../config/config';
 
 const HtmlTemplateConfig = {
+  base: AppConfig.base ?? '/',
   title: AppConfig.title,
   headScripts: AppConfig.headScripts,
   bodyScripts: AppConfig.bodyScripts,
@@ -132,6 +133,7 @@ const jsonModule = {
 const plugins = [
   new WebpackBar(),
   new HtmlWebpackPlugin({
+    base: HtmlTemplateConfig.base,
     config: HtmlTemplateConfig,
     template: path.resolve(__dirname, './template/index.ejs'),
   }),
