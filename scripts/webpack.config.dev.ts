@@ -18,10 +18,10 @@ const config: Configuration | WebpackOptionsNormalized = {
       openAnalyzer: false,
     }),
   ]),
-  devtool: 'eval-cheap-module-source-map',
+  devtool: 'cheap-module-source-map',
   devServer: {
     static: {
-      directory: path.join(__dirname, 'dist'),
+      directory: path.join(__dirname, '../public'),
     },
     historyApiFallback: true,
     port: 9000,
